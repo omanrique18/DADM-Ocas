@@ -56,33 +56,35 @@ class TicTacToe() {
 
         // Check for tie
         for (i in 0..8) {
-            if (board[i] !== oSymbol && board[i] !== xSymbol) return GameState.TIE.name
+            if (board[i] == "-")
+                return GameState.GAME_CONTINUES.name
         }
-
-        return GameState.GAME_CONTINUES.name
+        return GameState.TIE.name
     }
 
     public fun setPlayerMove(field: Int): Boolean{
-        var tillWasChanged: Boolean
+        var tileWasChanged: Boolean
         if (this.board[field] == "-") {
             this.board[field] = this.turn
             this.turn = alternateSymbols(this.turn)
-            tillWasChanged = true
+            tileWasChanged = true
         }else{
-            tillWasChanged = false
+            tileWasChanged = false
         }
-        return tillWasChanged
+        return tileWasChanged
     }
 
-    public fun setComputerMove() {
+    public fun setComputerMove(): Int{
         var move: Int
         // First see if there's a move computer can make to win
         for (i in 0..8) {
             if (this.board[i] !== xSymbol && this.board[i] !== oSymbol) {
                 val curr = this.board[i]
                 this.board[i] = this.computerSymbol
-                if (checkForWinner() == this.computerSymbol)
-                    return
+                if (checkForWinner() == this.computerSymbol) {
+                    this.turn = alternateSymbols(this.turn)
+                    return i
+                }
                 else
                     this.board[i] = curr
             }
@@ -94,7 +96,8 @@ class TicTacToe() {
                 this.board[i] = this.personSymbol
                 if (checkForWinner() == this.personSymbol) {
                     this.board[i] = this.computerSymbol
-                    return
+                    this.turn = alternateSymbols(this.turn)
+                    return i
                 } else
                     this.board[i] = curr
             }
@@ -104,6 +107,8 @@ class TicTacToe() {
             move = (0..8).random()
         } while (this.board[move] === personSymbol || this.board[move] === computerSymbol)
         this.board[move] = computerSymbol
+        this.turn = alternateSymbols(this.turn)
+        return move
     }
 
     public fun newGame(){
