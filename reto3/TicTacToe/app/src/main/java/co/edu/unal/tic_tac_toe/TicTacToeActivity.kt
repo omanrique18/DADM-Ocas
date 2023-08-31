@@ -1,5 +1,6 @@
 package co.edu.unal.tic_tac_toe
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -13,6 +14,7 @@ class TicTacToeActivity : AppCompatActivity() {
     private lateinit var tiesText: TextView
     private lateinit var gameStateText: TextView
     private lateinit var newGameButton: Button
+    private lateinit var backButton: Button
     private lateinit var boardButtons: ArrayList<Button>
     private lateinit var scoreBoard: Array<Int>
     private lateinit var symbols: Array<String>
@@ -31,6 +33,7 @@ class TicTacToeActivity : AppCompatActivity() {
         tiesText = findViewById<TextView>(R.id.ties)
         gameStateText = findViewById<TextView>(R.id.game_status)
         newGameButton = findViewById<Button>(R.id.new_game)
+        backButton = findViewById(R.id.back)
         boardButtons = arrayListOf<Button>()
         boardButtons.add(findViewById(R.id.tile0))
         boardButtons.add(findViewById(R.id.tile1))
@@ -51,6 +54,11 @@ class TicTacToeActivity : AppCompatActivity() {
             var computerTile = ticTacToe.setComputerMove()
             boardButtons[computerTile].text = actualTurn
             isGameFinished()
+        }
+
+        backButton.setOnClickListener {
+            val intent2 = Intent(this,MainMenuActivity::class.java)
+            startActivity(intent2)
         }
 
         newGameButton.setOnClickListener{
