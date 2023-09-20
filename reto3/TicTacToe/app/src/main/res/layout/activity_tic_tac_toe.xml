@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".TicTacToeActivity">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/main_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
     <FrameLayout
         android:id="@+id/frameLayout"
@@ -23,43 +34,46 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:adjustViewBounds="true"
-            android:contentDescription="tictactoe grid"
+            android:contentDescription="@string/grid_description"
             app:srcCompat="@drawable/grid" />
 
         <TableLayout
             android:id="@+id/play_grid"
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center">
 
-            <TableRow android:gravity="center|center_horizontal">
+            <TableRow android:gravity="center_horizontal|center_vertical">
 
                 <Button
                     android:id="@+id/tile0"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
                     android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile1"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile2"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
             </TableRow>
 
             <TableRow android:gravity="center|center_horizontal">
@@ -67,29 +81,32 @@
                 <Button
                     android:id="@+id/tile3"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile4"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile5"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
             </TableRow>
 
             <TableRow
@@ -99,29 +116,32 @@
                 <Button
                     android:id="@+id/tile6"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile7"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
 
                 <Button
                     android:id="@+id/tile8"
                     style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="115dp"
-                    android:layout_height="115dp"
-                    android:text="-"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:text="@string/empty_cell"
                     android:textColor="#000000"
-                    android:textSize="70dp" />
+                    android:textSize="70sp" />
             </TableRow>
         </TableLayout>
 
@@ -132,7 +152,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="TextView"
+        android:text="@string/default_text"
         android:textSize="20sp"
         android:textStyle="bold|italic"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
@@ -144,10 +164,10 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="411dp"
-        android:layout_height="46dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/new_game"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/game_status"
@@ -159,7 +179,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
+            android:text="@string/default_text"
             android:textSize="20sp" />
 
         <TextView
@@ -168,7 +188,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
+            android:text="@string/default_text"
             android:textSize="20sp" />
 
         <TextView
@@ -177,48 +197,24 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="TextView"
+            android:text="@string/default_text"
             android:textSize="20sp" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/new_game"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="New Game"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/back"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/turn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="1dp"
         android:gravity="center"
-        android:text="TextView"
+        android:text="@string/default_text"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/main_toolbar"
         app:layout_constraintVertical_bias="0.5" />
 
-    <Button
-        android:id="@+id/back"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Back"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/new_game"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout"
-        app:layout_constraintVertical_bias="0.5" />
 </androidx.constraintlayout.widget.ConstraintLayout>

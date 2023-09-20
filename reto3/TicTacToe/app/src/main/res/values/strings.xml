@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">Tic-Tac-Toe</string>
+    <string name="choose_difficulty">Choose a difficulty level</string>
+    <string name="back_button_text">Back</string>
+    <string name="empty_cell">-</string>
+    <string name="new_game_button">New Game</string>
+    <string name="default_text">TextView</string>
+    <string name="grid_description">tic tac toe grid</string>
+    <string name="x_value">X</string>
+    <string name="o_value">O</string>
+    <string name="x_wins">X Wins!</string>
+    <string name="tie">It\'s a tie!</string>
+    <string name="o_wins">O Wins!</string>
+    <string name="quit_message">Are you sure you want to quit?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="icon_description">game icon</string>
+    <string name="about_title">Tic-Tac-Toe</string>
+    <string name="about_author">By Oscar Manrique</string>
+    <string name="about_description">Play the famous game \'Tic Tac Toe\', with 3 different
+        difficulty levels. You can also choose to play against the machine or a friend! \n
+        Enjoy the game :)</string>
+    <string name="ok">OK</string>
+    <string name="quit_menu">Quit</string>
+    <string name="new_game_menu">New Game</string>
+    <string name="difficulty_menu">Difficulty</string>
+    <string name="about_menu">About</string>
 </resources>

@@ -1,30 +1,39 @@
 package co.edu.unal.tic_tac_toe
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.widget.Button
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.DialogFragment
+import co.edu.unal.tic_tac_toe.dialogs.AboutDialog
+import co.edu.unal.tic_tac_toe.dialogs.DifficultyDialog
+import co.edu.unal.tic_tac_toe.dialogs.QuitDialog
 
-class TicTacToeActivity : AppCompatActivity() {
+
+class TicTacToeActivity : AppCompatActivity(),
+    DifficultyDialog.DifficultyDialogListener,
+    QuitDialog.QuitDialogListener {
     private lateinit var ticTacToe: TicTacToe
     private lateinit var turnText: TextView
     private lateinit var OWinsText: TextView
     private lateinit var XWinsText: TextView
     private lateinit var tiesText: TextView
     private lateinit var gameStateText: TextView
-    private lateinit var newGameButton: Button
-    private lateinit var backButton: Button
     private lateinit var boardButtons: ArrayList<Button>
     private lateinit var scoreBoard: Array<Int>
     private lateinit var symbols: Array<String>
+    private lateinit var bundle: Bundle
+    private var isSingleMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_tic_tac_toe)
+        setSupportActionBar(findViewById(R.id.main_toolbar))
 
-        val bundle = intent.extras!!
-        val isSingleMode = bundle.getBoolean("isSingleMode")
+        bundle = intent.extras!!
+        isSingleMode = bundle.getBoolean("isSingleMode")
 
         ticTacToe = TicTacToe()
         turnText = findViewById<TextView>(R.id.turn)
@@ -32,8 +41,6 @@ class TicTacToeActivity : AppCompatActivity() {
         XWinsText = findViewById<TextView>(R.id.x_wins)
         tiesText = findViewById<TextView>(R.id.ties)
         gameStateText = findViewById<TextView>(R.id.game_status)
-        newGameButton = findViewById<Button>(R.id.new_game)
-        backButton = findViewById(R.id.back)
         boardButtons = arrayListOf<Button>()
         boardButtons.add(findViewById(R.id.tile0))
         boardButtons.add(findViewById(R.id.tile1))
@@ -48,31 +55,16 @@ class TicTacToeActivity : AppCompatActivity() {
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
 
         setInitialText()
+        var computerTile = ticTacToe.setComputerMove()
 
         if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
-            var actualTurn = ticTacToe.getTurn()
-            var computerTile = ticTacToe.setComputerMove()
+            val actualTurn = ticTacToe.getTurn()
             boardButtons[computerTile].text = actualTurn
             isGameFinished()
         }
 
-        backButton.setOnClickListener {
-            val intent2 = Intent(this,MainMenuActivity::class.java)
-            startActivity(intent2)
-        }
-
-        newGameButton.setOnClickListener{
-            ticTacToe.newGame()
-            loadTurnText()
-            for (button in boardButtons) {
-                button.text = "-"
-            }
-            gameStateText.text = " "
-        }
-
         for ((i, button) in boardButtons.withIndex()) {
             button.setOnClickListener {
-                var computerTile = 0
                 var actualTurn = ticTacToe.getTurn()
                 if(isSingleMode){
                     if(actualTurn == ticTacToe.getPersonSymbol()){
@@ -94,14 +86,68 @@ class TicTacToeActivity : AppCompatActivity() {
                     }
                 }else{
                     val tileWasChanged = ticTacToe.setPlayerMove(i)
-                    if (tileWasChanged)
+                    if (tileWasChanged) {
                         button.text = actualTurn
                         isGameFinished()
+                    }
                 }
             }
         }
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        super.onCreateOptionsMenu(menu)
+        val inflater = menuInflater
+        inflater.inflate(R.menu.options_menu, menu)
+        val difficultyItem = menu!!.findItem(R.id.ai_difficulty)
+        difficultyItem.isVisible = this.isSingleMode
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.new_game -> {
+                ticTacToe.newGame()
+                loadTurnText()
+                for (button in boardButtons) {
+                    button.text = "-"
+                }
+                gameStateText.text = " "
+                return true
+            }
+            R.id.ai_difficulty -> {
+                val difficultyDialog = DifficultyDialog()
+                difficultyDialog.setCurrentDifficulty(ticTacToe.getDifficulty())
+                difficultyDialog.show(supportFragmentManager,"difficulty")
+                return true
+            }
+            R.id.quit -> {
+                val quitDialog = QuitDialog()
+                quitDialog.show(supportFragmentManager, "quit")
+                return true
+            }
+            R.id.about -> {
+                val aboutDialog = AboutDialog()
+                aboutDialog.show(supportFragmentManager, "about")
+            }
+        }
+        return false
+    }
+
+    override fun onDialogEasyClick(dialog: DialogFragment) {
+        ticTacToe.setDifficulty(TicTacToe.Difficulty.EASY)
+    }
+    override fun onDialogHardClick(dialog: DialogFragment) {
+        ticTacToe.setDifficulty(TicTacToe.Difficulty.HARD)
+    }
+
+    override fun onDialogExpertClick(dialog: DialogFragment) {
+        ticTacToe.setDifficulty(TicTacToe.Difficulty.EXPERT)
+    }
+
+    override fun onDialogPositiveClick(dialog: DialogFragment) {
+        this.finish()
+    }
     private fun setInitialText(){
         loadTurnText()
         loadScoreBoardText()
@@ -109,18 +155,18 @@ class TicTacToeActivity : AppCompatActivity() {
     }
 
     private fun isGameFinished(): Boolean{
-        var result = ticTacToe.checkForWinner()
+        val result = ticTacToe.checkForWinner()
         when(result){
             "X" -> {
-                gameStateText.text = "X Wins!"
+                gameStateText.text = getString(R.string.x_wins)
                 scoreBoard[0] = scoreBoard[0]+1
             }
             "TIE" -> {
-                gameStateText.text = "It's a tie!"
+                gameStateText.text = getString(R.string.tie)
                 scoreBoard[1] = scoreBoard[1]+1
             }
             "O" -> {
-                gameStateText.text = "O Wins!"
+                gameStateText.text = getString(R.string.o_wins)
                 scoreBoard[2] = scoreBoard[2]+1
             }
             else -> {
@@ -133,17 +179,16 @@ class TicTacToeActivity : AppCompatActivity() {
     }
 
     private fun loadTurnText(){
-        var turn = ticTacToe.getTurn()
+        val turn = ticTacToe.getTurn()
         turnText.text = "Actual turn: $turn"
     }
 
     private fun loadScoreBoardText(){
-        var xWins = scoreBoard[0].toString()
-        var ties = scoreBoard[1].toString()
-        var oWins = scoreBoard[2].toString()
+        val xWins = scoreBoard[0].toString()
+        val ties = scoreBoard[1].toString()
+        val oWins = scoreBoard[2].toString()
         XWinsText.text = "X wins: $xWins"
         tiesText.text = "Ties: $ties"
         OWinsText.text = "O wins: $oWins"
     }
-
 }

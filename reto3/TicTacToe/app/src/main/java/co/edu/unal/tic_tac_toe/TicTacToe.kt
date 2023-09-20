@@ -3,6 +3,7 @@ package co.edu.unal.tic_tac_toe
 class TicTacToe() {
     private val xSymbol = "X"
     private val oSymbol = "O"
+    private var currentDifficulty = Difficulty.EASY
     private var board: Array<String>
     private var personSymbol: String
     private var computerSymbol: String
@@ -15,19 +16,30 @@ class TicTacToe() {
         this.computerSymbol = alternateSymbols(this.personSymbol)
     }
 
-    public fun getTurn(): String{
+    fun getTurn(): String{
         return this.turn
     }
 
-    public fun getPersonSymbol(): String{
+    fun getPersonSymbol(): String{
         return this.personSymbol
     }
 
-    public fun getComputerSymbol(): String{
+    fun getComputerSymbol(): String{
         return this.computerSymbol
     }
 
-    public fun checkForWinner(): String {
+    fun getDifficulty(): Difficulty {
+        return this.currentDifficulty
+    }
+    fun setDifficulty(difficulty: Difficulty) {
+        this.currentDifficulty = difficulty
+    }
+
+    fun getBoard(): Array<String>{
+        return this.board
+    }
+
+    fun checkForWinner(): String {
         var i = 0
         // Check rows
         while (i <= 6) {
@@ -62,8 +74,8 @@ class TicTacToe() {
         return GameState.TIE.name
     }
 
-    public fun setPlayerMove(field: Int): Boolean{
-        var tileWasChanged: Boolean
+    fun setPlayerMove(field: Int): Boolean{
+        val tileWasChanged: Boolean
         if (this.board[field] == "-") {
             this.board[field] = this.turn
             this.turn = alternateSymbols(this.turn)
@@ -74,9 +86,27 @@ class TicTacToe() {
         return tileWasChanged
     }
 
-    public fun setComputerMove(): Int{
+    fun setComputerMove(): Int{
         var move: Int
-        // First see if there's a move computer can make to win
+        var result: Int
+        if (this.currentDifficulty == Difficulty.HARD || this.currentDifficulty == Difficulty.EXPERT) {
+            result = makeWinningMove()
+            if(result != -1) return result
+        }
+        if (this.currentDifficulty == Difficulty.EXPERT) {
+            result = makeBlockingMove()
+            if (result != -1) return result
+        }
+        // Generate random move
+        do {
+            move = (0..8).random()
+        } while (this.board[move] === personSymbol || this.board[move] === computerSymbol)
+        this.board[move] = computerSymbol
+        this.turn = alternateSymbols(this.turn)
+        return move
+    }
+
+    private fun makeWinningMove(): Int {
         for (i in 0..8) {
             if (this.board[i] !== xSymbol && this.board[i] !== oSymbol) {
                 val curr = this.board[i]
@@ -89,7 +119,10 @@ class TicTacToe() {
                     this.board[i] = curr
             }
         }
-        // See if there's a move computer can make to block X from winning
+        return -1
+    }
+
+    private fun makeBlockingMove(): Int{
         for (i in 0..8) {
             if (this.board[i] !== xSymbol && this.board[i] !== oSymbol) {
                 val curr = this.board[i] // Save the current number
@@ -102,16 +135,10 @@ class TicTacToe() {
                     this.board[i] = curr
             }
         }
-        // Generate random move
-        do {
-            move = (0..8).random()
-        } while (this.board[move] === personSymbol || this.board[move] === computerSymbol)
-        this.board[move] = computerSymbol
-        this.turn = alternateSymbols(this.turn)
-        return move
+        return -1
     }
 
-    public fun newGame(){
+    fun newGame(){
         this.board = Array(9) { "-" }
         this.turn = setOf(oSymbol,xSymbol).random()
         this.personSymbol = setOf(oSymbol,xSymbol).random()
@@ -127,5 +154,9 @@ class TicTacToe() {
 
     private enum class GameState{
         GAME_CONTINUES, TIE, X, O
+    }
+
+    enum class Difficulty{
+        EASY, HARD, EXPERT
     }
 }
