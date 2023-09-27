@@ -1,8 +1,8 @@
 package co.edu.unal.tic_tac_toe
 
 class TicTacToe() {
-    private val xSymbol = "X"
-    private val oSymbol = "O"
+    val xSymbol = "X"
+    val oSymbol = "O"
     private var currentDifficulty = Difficulty.EASY
     private var board: Array<String>
     private var personSymbol: String
@@ -12,8 +12,8 @@ class TicTacToe() {
     init{
         this.board = Array(9) { "-" }
         this.turn = setOf(oSymbol,xSymbol).random()
-        this.personSymbol = setOf(oSymbol,xSymbol).random()
-        this.computerSymbol = alternateSymbols(this.personSymbol)
+        this.personSymbol = xSymbol
+        this.computerSymbol = oSymbol
     }
 
     fun getTurn(): String{
@@ -86,16 +86,16 @@ class TicTacToe() {
         return tileWasChanged
     }
 
-    fun setComputerMove(): Int{
+    fun setComputerMove(){
         var move: Int
         var result: Int
         if (this.currentDifficulty == Difficulty.HARD || this.currentDifficulty == Difficulty.EXPERT) {
             result = makeWinningMove()
-            if(result != -1) return result
+            if(result != -1) return
         }
         if (this.currentDifficulty == Difficulty.EXPERT) {
             result = makeBlockingMove()
-            if (result != -1) return result
+            if (result != -1) return
         }
         // Generate random move
         do {
@@ -103,7 +103,6 @@ class TicTacToe() {
         } while (this.board[move] === personSymbol || this.board[move] === computerSymbol)
         this.board[move] = computerSymbol
         this.turn = alternateSymbols(this.turn)
-        return move
     }
 
     private fun makeWinningMove(): Int {
@@ -141,8 +140,8 @@ class TicTacToe() {
     fun newGame(){
         this.board = Array(9) { "-" }
         this.turn = setOf(oSymbol,xSymbol).random()
-        this.personSymbol = setOf(oSymbol,xSymbol).random()
-        this.computerSymbol = alternateSymbols(this.personSymbol)
+        this.personSymbol = xSymbol
+        this.computerSymbol = oSymbol
     }
 
     private fun alternateSymbols(symbol: String): String{

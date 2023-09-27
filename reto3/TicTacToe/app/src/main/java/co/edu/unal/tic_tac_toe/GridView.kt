@@ -4,31 +4,54 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
+import android.graphics.Rect
 import android.util.AttributeSet
 import android.view.View
 
 
-class GridView(context: Context, attrs: AttributeSet, defStyle: Int): View(context,attrs,defStyle) {
-    private var xBitmap: Bitmap = BitmapFactory.decodeResource(resources, R.drawable.x_symbol)
+class GridView(context: Context, attrs: AttributeSet): View(context,attrs) {
+    private lateinit var ticTacToe: TicTacToe
+    private var xBitmap: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.x_symbol)
     private var oBitmap: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.o_symbol)
+    private var gridBitmap: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.grid)
+
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-
         val gridWidth = width
         val gridHeight = height
-        val tileWidth = gridWidth / 3
-        val tileHeight = gridHeight / 3
+        val tileWidth = getTileWidth()
+        val tileHeight = getTileHeight()
+        val board = ticTacToe.getBoard()
+        val gridArea = Rect(0,0,gridWidth,gridHeight)
+        canvas!!.drawBitmap(gridBitmap!!, null, gridArea, null)
 
         for (i in 0..8){
             val column = i % 3
             val row = i / 3
+            val left = column * tileWidth
+            val right = (column + 1) * tileWidth
+            val top = row * tileHeight
+            val bottom = (row + 1) * tileHeight
+            val tileArea = Rect(left,top,right,bottom)
 
-            var left = column * tileWidth
-            var right = (column + 1) * tileWidth
-            var top = row * tileHeight
-            var bottom = (row + 1) * tileHeight
-
+            if (board[i] == ticTacToe.xSymbol)
+                canvas.drawBitmap(xBitmap!!, null, tileArea, null)
+            if (board[i] == ticTacToe.oSymbol)
+                canvas.drawBitmap(oBitmap!!, null, tileArea, null)
         }
+    }
+
+    fun setTicTacToe(ticTacToe: TicTacToe){
+        this.ticTacToe = ticTacToe
+        this.invalidate()
+    }
+
+    fun getTileHeight(): Int{
+        return height / 3
+    }
+
+    fun getTileWidth(): Int{
+        return width / 3
     }
 }

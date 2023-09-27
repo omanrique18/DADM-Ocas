@@ -3,7 +3,7 @@ package co.edu.unal.tic_tac_toe
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
+import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
@@ -16,12 +16,12 @@ class TicTacToeActivity : AppCompatActivity(),
     DifficultyDialog.DifficultyDialogListener,
     QuitDialog.QuitDialogListener {
     private lateinit var ticTacToe: TicTacToe
+    private lateinit var gridView: GridView
     private lateinit var turnText: TextView
     private lateinit var OWinsText: TextView
     private lateinit var XWinsText: TextView
     private lateinit var tiesText: TextView
     private lateinit var gameStateText: TextView
-    private lateinit var boardButtons: ArrayList<Button>
     private lateinit var scoreBoard: Array<Int>
     private lateinit var symbols: Array<String>
     private lateinit var bundle: Bundle
@@ -36,63 +36,21 @@ class TicTacToeActivity : AppCompatActivity(),
         isSingleMode = bundle.getBoolean("isSingleMode")
 
         ticTacToe = TicTacToe()
+        gridView = findViewById<GridView>(R.id.grid)
         turnText = findViewById<TextView>(R.id.turn)
         OWinsText = findViewById<TextView>(R.id.o_wins)
         XWinsText = findViewById<TextView>(R.id.x_wins)
         tiesText = findViewById<TextView>(R.id.ties)
         gameStateText = findViewById<TextView>(R.id.game_status)
-        boardButtons = arrayListOf<Button>()
-        boardButtons.add(findViewById(R.id.tile0))
-        boardButtons.add(findViewById(R.id.tile1))
-        boardButtons.add(findViewById(R.id.tile2))
-        boardButtons.add(findViewById(R.id.tile3))
-        boardButtons.add(findViewById(R.id.tile4))
-        boardButtons.add(findViewById(R.id.tile5))
-        boardButtons.add(findViewById(R.id.tile6))
-        boardButtons.add(findViewById(R.id.tile7))
-        boardButtons.add(findViewById(R.id.tile8))
         scoreBoard = arrayOf(0,0,0)
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
 
+        gridView.setTicTacToe(ticTacToe)
+        gridView.setOnTouchListener { _ , motionEvent -> touchGridEvent(motionEvent)
+        }
         setInitialText()
-        var computerTile = ticTacToe.setComputerMove()
 
-        if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
-            val actualTurn = ticTacToe.getTurn()
-            boardButtons[computerTile].text = actualTurn
-            isGameFinished()
-        }
-
-        for ((i, button) in boardButtons.withIndex()) {
-            button.setOnClickListener {
-                var actualTurn = ticTacToe.getTurn()
-                if(isSingleMode){
-                    if(actualTurn == ticTacToe.getPersonSymbol()){
-                        val tileWasChanged = ticTacToe.setPlayerMove(i)
-                        if (tileWasChanged) {
-                            button.text = actualTurn
-                            actualTurn = ticTacToe.getTurn()
-                            val isGameFinished = isGameFinished()
-                            if(!isGameFinished) {
-                                computerTile = ticTacToe.setComputerMove()
-                                boardButtons[computerTile].text = actualTurn
-                                isGameFinished()
-                            }
-                        }
-                    }else{
-                        computerTile = ticTacToe.setComputerMove()
-                        boardButtons[computerTile].text = actualTurn
-                        isGameFinished()
-                    }
-                }else{
-                    val tileWasChanged = ticTacToe.setPlayerMove(i)
-                    if (tileWasChanged) {
-                        button.text = actualTurn
-                        isGameFinished()
-                    }
-                }
-            }
-        }
+        firstComputerMove()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -109,10 +67,13 @@ class TicTacToeActivity : AppCompatActivity(),
             R.id.new_game -> {
                 ticTacToe.newGame()
                 loadTurnText()
-                for (button in boardButtons) {
-                    button.text = "-"
-                }
+                gridView.invalidate()
                 gameStateText.text = " "
+                gridView.isEnabled = true
+                if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
+                    ticTacToe.setComputerMove()
+                    isGameFinished()
+                }
                 return true
             }
             R.id.ai_difficulty -> {
@@ -148,6 +109,41 @@ class TicTacToeActivity : AppCompatActivity(),
     override fun onDialogPositiveClick(dialog: DialogFragment) {
         this.finish()
     }
+
+    private fun touchGridEvent(event: MotionEvent?): Boolean {
+        if(!isGameFinished()){
+            val xCoordinate = event?.x?.toInt()
+            val yCoordinate = event?.y?.toInt()
+
+            if (xCoordinate != null && yCoordinate != null) {
+                val column = xCoordinate / gridView.getTileWidth()
+                val row = yCoordinate / gridView.getTileHeight()
+                val tilePosition = row * 3 + column
+
+                if (isSingleMode) {
+                    if (ticTacToe.getTurn() == ticTacToe.getPersonSymbol()) {
+                        val tileWasChanged = setPlayerMove(tilePosition)
+                        if (tileWasChanged) {
+                            val isGameFinished = isGameFinished()
+                            if (!isGameFinished) {
+                                setComputerMove()
+                                isGameFinished()
+                            }
+                        }
+                    } else {
+                        setComputerMove()
+                        isGameFinished()
+                    }
+                } else {
+                    val tileWasChanged = setPlayerMove(tilePosition)
+                    if (tileWasChanged) {
+                        isGameFinished()
+                    }
+                }
+            }
+        }
+        return true
+    }
     private fun setInitialText(){
         loadTurnText()
         loadScoreBoardText()
@@ -160,14 +156,17 @@ class TicTacToeActivity : AppCompatActivity(),
             "X" -> {
                 gameStateText.text = getString(R.string.x_wins)
                 scoreBoard[0] = scoreBoard[0]+1
+                gridView.isEnabled = false
             }
             "TIE" -> {
                 gameStateText.text = getString(R.string.tie)
                 scoreBoard[1] = scoreBoard[1]+1
+                gridView.isEnabled = false
             }
             "O" -> {
                 gameStateText.text = getString(R.string.o_wins)
                 scoreBoard[2] = scoreBoard[2]+1
+                gridView.isEnabled = false
             }
             else -> {
                 gameStateText.text = " "
@@ -187,8 +186,35 @@ class TicTacToeActivity : AppCompatActivity(),
         val xWins = scoreBoard[0].toString()
         val ties = scoreBoard[1].toString()
         val oWins = scoreBoard[2].toString()
-        XWinsText.text = "X wins: $xWins"
         tiesText.text = "Ties: $ties"
-        OWinsText.text = "O wins: $oWins"
+        if(isSingleMode){
+            XWinsText.text = "Player wins: $xWins"
+            OWinsText.text = "Computer wins: $oWins"
+        }else{
+            XWinsText.text = "X wins: $xWins"
+            OWinsText.text = "O wins: $oWins"
+        }
+
+    }
+
+    private fun setPlayerMove(field: Int): Boolean{
+        return if(ticTacToe.setPlayerMove(field)){
+            gridView.invalidate()
+            true
+        }else{
+            false
+        }
+    }
+
+    private fun setComputerMove(){
+        ticTacToe.setComputerMove()
+        gridView.invalidate()
+    }
+
+    private fun firstComputerMove(){
+        if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
+            ticTacToe.setComputerMove()
+            isGameFinished()
+        }
     }
 }

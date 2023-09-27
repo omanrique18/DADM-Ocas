@@ -18,134 +18,17 @@
         app:layout_constraintTop_toTopOf="parent"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-    <FrameLayout
-        android:id="@+id/frameLayout"
+    <co.edu.unal.tic_tac_toe.GridView
+        android:id="@+id/grid"
         android:layout_width="350dp"
         android:layout_height="350dp"
+        android:layout_marginTop="5dp"
         app:layout_constraintBottom_toTopOf="@+id/game_status"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/turn"
-        app:layout_constraintVertical_bias="0.5">
-
-        <ImageView
-            android:id="@+id/grid"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:adjustViewBounds="true"
-            android:contentDescription="@string/grid_description"
-            app:srcCompat="@drawable/grid" />
-
-        <TableLayout
-            android:id="@+id/play_grid"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center">
-
-            <TableRow android:gravity="center_horizontal|center_vertical">
-
-                <Button
-                    android:id="@+id/tile0"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile1"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile2"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-            </TableRow>
-
-            <TableRow android:gravity="center|center_horizontal">
-
-                <Button
-                    android:id="@+id/tile3"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile4"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile5"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-            </TableRow>
-
-            <TableRow
-                android:layout_height="143dp"
-                android:gravity="center|center_horizontal">
-
-                <Button
-                    android:id="@+id/tile6"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile7"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-
-                <Button
-                    android:id="@+id/tile8"
-                    style="@style/Widget.AppCompat.Button.Borderless"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:text="@string/empty_cell"
-                    android:textColor="#000000"
-                    android:textSize="70sp" />
-            </TableRow>
-        </TableLayout>
-
-    </FrameLayout>
+        app:layout_constraintVertical_bias="0.5" />
 
     <TextView
         android:id="@+id/game_status"
@@ -159,7 +42,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/frameLayout"
+        app:layout_constraintTop_toBottomOf="@+id/grid"
         app:layout_constraintVertical_bias="0.5" />
 
     <LinearLayout
@@ -210,7 +93,7 @@
         android:text="@string/default_text"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
+        app:layout_constraintBottom_toTopOf="@+id/grid"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
