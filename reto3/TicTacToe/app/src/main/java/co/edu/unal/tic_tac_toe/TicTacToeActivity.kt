@@ -1,11 +1,16 @@
 package co.edu.unal.tic_tac_toe
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.PackageManagerCompat.LOG_TAG
 import androidx.fragment.app.DialogFragment
 import co.edu.unal.tic_tac_toe.dialogs.AboutDialog
 import co.edu.unal.tic_tac_toe.dialogs.DifficultyDialog
@@ -18,13 +23,15 @@ class TicTacToeActivity : AppCompatActivity(),
     private lateinit var ticTacToe: TicTacToe
     private lateinit var gridView: GridView
     private lateinit var turnText: TextView
-    private lateinit var OWinsText: TextView
-    private lateinit var XWinsText: TextView
+    private lateinit var oWinsText: TextView
+    private lateinit var xWinsText: TextView
     private lateinit var tiesText: TextView
     private lateinit var gameStateText: TextView
     private lateinit var scoreBoard: Array<Int>
     private lateinit var symbols: Array<String>
     private lateinit var bundle: Bundle
+    private lateinit var xSound: MediaPlayer
+    private lateinit var oSound: MediaPlayer
     private var isSingleMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,19 +45,29 @@ class TicTacToeActivity : AppCompatActivity(),
         ticTacToe = TicTacToe()
         gridView = findViewById<GridView>(R.id.grid)
         turnText = findViewById<TextView>(R.id.turn)
-        OWinsText = findViewById<TextView>(R.id.o_wins)
-        XWinsText = findViewById<TextView>(R.id.x_wins)
+        oWinsText = findViewById<TextView>(R.id.o_wins)
+        xWinsText = findViewById<TextView>(R.id.x_wins)
         tiesText = findViewById<TextView>(R.id.ties)
         gameStateText = findViewById<TextView>(R.id.game_status)
         scoreBoard = arrayOf(0,0,0)
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
-
         gridView.setTicTacToe(ticTacToe)
         gridView.setOnTouchListener { _ , motionEvent -> touchGridEvent(motionEvent)
         }
         setInitialText()
-
         firstComputerMove()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        xSound = MediaPlayer.create(applicationContext,R.raw.x_touch)
+        oSound = MediaPlayer.create(applicationContext,R.raw.o_touch)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        xSound.release()
+        oSound.release()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -71,8 +88,7 @@ class TicTacToeActivity : AppCompatActivity(),
                 gameStateText.text = " "
                 gridView.isEnabled = true
                 if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
-                    ticTacToe.setComputerMove()
-                    isGameFinished()
+                    setComputerMove()
                 }
                 return true
             }
@@ -127,12 +143,10 @@ class TicTacToeActivity : AppCompatActivity(),
                             val isGameFinished = isGameFinished()
                             if (!isGameFinished) {
                                 setComputerMove()
-                                isGameFinished()
                             }
                         }
                     } else {
                         setComputerMove()
-                        isGameFinished()
                     }
                 } else {
                     val tileWasChanged = setPlayerMove(tilePosition)
@@ -188,16 +202,17 @@ class TicTacToeActivity : AppCompatActivity(),
         val oWins = scoreBoard[2].toString()
         tiesText.text = "Ties: $ties"
         if(isSingleMode){
-            XWinsText.text = "Player wins: $xWins"
-            OWinsText.text = "Computer wins: $oWins"
+            xWinsText.text = "Player wins: $xWins"
+            oWinsText.text = "Computer wins: $oWins"
         }else{
-            XWinsText.text = "X wins: $xWins"
-            OWinsText.text = "O wins: $oWins"
+            xWinsText.text = "X wins: $xWins"
+            oWinsText.text = "O wins: $oWins"
         }
 
     }
 
     private fun setPlayerMove(field: Int): Boolean{
+        xSound.start()
         return if(ticTacToe.setPlayerMove(field)){
             gridView.invalidate()
             true
@@ -207,14 +222,19 @@ class TicTacToeActivity : AppCompatActivity(),
     }
 
     private fun setComputerMove(){
-        ticTacToe.setComputerMove()
+        gridView.isEnabled = false
+        val handler = Handler(Looper.getMainLooper())
+        handler.postDelayed(Runnable {
+            oSound.start()
+            ticTacToe.setComputerMove()
+            isGameFinished()
+            gridView.isEnabled = true }, 1000)
         gridView.invalidate()
     }
 
     private fun firstComputerMove(){
         if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
-            ticTacToe.setComputerMove()
-            isGameFinished()
+            setComputerMove()
         }
     }
 }
