@@ -29,10 +29,10 @@ class GridView(context: Context, attrs: AttributeSet): View(context,attrs) {
         for (i in 0..8){
             val column = i % 3
             val row = i / 3
-            val left = column * tileWidth
-            val right = (column + 1) * tileWidth
-            val top = row * tileHeight
-            val bottom = (row + 1) * tileHeight
+            val left = column * tileWidth + 70
+            val right = (column + 1) * tileWidth - 70
+            val top = row * tileHeight + 70
+            val bottom = (row + 1) * tileHeight - 70
             val tileArea = Rect(left,top,right,bottom)
 
             if (board[i] == ticTacToe.xSymbol)
