@@ -25,4 +25,7 @@
     <string name="new_game_menu">New Game</string>
     <string name="difficulty_menu">Difficulty</string>
     <string name="about_menu">About</string>
+    <string name="single_player">Single player</string>
+    <string name="multi_player">Multi player</string>
+    <string name="select_the_game_mode">Select the game mode:</string>
 </resources>
