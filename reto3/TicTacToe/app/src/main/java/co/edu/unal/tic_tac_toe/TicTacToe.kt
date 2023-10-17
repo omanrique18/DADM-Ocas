@@ -151,6 +151,16 @@ class TicTacToe() {
             oSymbol
     }
 
+    fun setValuesOnRestart(board: Array<String>?, turn: String?){
+        if(board != null && turn != null){
+            this.board = board
+            this.turn = turn
+        }else{
+            newGame()
+        }
+
+    }
+
     private enum class GameState{
         GAME_CONTINUES, TIE, X, O
     }

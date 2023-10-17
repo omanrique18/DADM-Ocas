@@ -4,13 +4,11 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.PackageManagerCompat.LOG_TAG
 import androidx.fragment.app.DialogFragment
 import co.edu.unal.tic_tac_toe.dialogs.AboutDialog
 import co.edu.unal.tic_tac_toe.dialogs.DifficultyDialog
@@ -43,12 +41,14 @@ class TicTacToeActivity : AppCompatActivity(),
         isSingleMode = bundle.getBoolean("isSingleMode")
 
         ticTacToe = TicTacToe()
-        gridView = findViewById<GridView>(R.id.grid)
-        turnText = findViewById<TextView>(R.id.turn)
-        oWinsText = findViewById<TextView>(R.id.o_wins)
-        xWinsText = findViewById<TextView>(R.id.x_wins)
-        tiesText = findViewById<TextView>(R.id.ties)
-        gameStateText = findViewById<TextView>(R.id.game_status)
+        if (savedInstanceState != null)
+            ticTacToe.setValuesOnRestart(savedInstanceState.getStringArray("board"), savedInstanceState.getString("turn"))
+        gridView = findViewById(R.id.grid)
+        turnText = findViewById(R.id.turn)
+        oWinsText = findViewById(R.id.o_wins)
+        xWinsText = findViewById(R.id.x_wins)
+        tiesText = findViewById(R.id.ties)
+        gameStateText = findViewById(R.id.game_status)
         scoreBoard = arrayOf(0,0,0)
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
         gridView.setTicTacToe(ticTacToe)
@@ -68,6 +68,12 @@ class TicTacToeActivity : AppCompatActivity(),
         super.onPause()
         xSound.release()
         oSound.release()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putStringArray("board", ticTacToe.getBoard())
+        outState.putString("turn", ticTacToe.getTurn())
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
