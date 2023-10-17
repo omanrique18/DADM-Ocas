@@ -1,5 +1,6 @@
 package co.edu.unal.tic_tac_toe
 
+import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
@@ -12,12 +13,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.DialogFragment
 import co.edu.unal.tic_tac_toe.dialogs.AboutDialog
 import co.edu.unal.tic_tac_toe.dialogs.DifficultyDialog
-import co.edu.unal.tic_tac_toe.dialogs.QuitDialog
+import co.edu.unal.tic_tac_toe.dialogs.ResetDialog
 
 
 class TicTacToeActivity : AppCompatActivity(),
     DifficultyDialog.DifficultyDialogListener,
-    QuitDialog.QuitDialogListener {
+    ResetDialog.ResetDialogListener {
     private lateinit var ticTacToe: TicTacToe
     private lateinit var gridView: GridView
     private lateinit var turnText: TextView
@@ -30,6 +31,7 @@ class TicTacToeActivity : AppCompatActivity(),
     private lateinit var bundle: Bundle
     private lateinit var xSound: MediaPlayer
     private lateinit var oSound: MediaPlayer
+    private lateinit var prefs: SharedPreferences
     private var isSingleMode = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,23 +39,32 @@ class TicTacToeActivity : AppCompatActivity(),
         setContentView(R.layout.activity_tic_tac_toe)
         setSupportActionBar(findViewById(R.id.main_toolbar))
 
+        prefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         bundle = intent.extras!!
         isSingleMode = bundle.getBoolean("isSingleMode")
 
         ticTacToe = TicTacToe()
         if (savedInstanceState != null)
-            ticTacToe.setValuesOnRestart(savedInstanceState.getStringArray("board"), savedInstanceState.getString("turn"))
+            ticTacToe.setValuesOnRestart(
+                savedInstanceState.getStringArray("board"),
+                savedInstanceState.getString("turn")
+            )
         gridView = findViewById(R.id.grid)
         turnText = findViewById(R.id.turn)
         oWinsText = findViewById(R.id.o_wins)
         xWinsText = findViewById(R.id.x_wins)
         tiesText = findViewById(R.id.ties)
         gameStateText = findViewById(R.id.game_status)
-        scoreBoard = arrayOf(0,0,0)
+        scoreBoard = arrayOf(
+            prefs.getInt("playerWins",0),
+            prefs.getInt("ties",0),
+            prefs.getInt("computerWins",0)
+        )
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
         gridView.setTicTacToe(ticTacToe)
         gridView.setOnTouchListener { _ , motionEvent -> touchGridEvent(motionEvent)
         }
+
         setInitialText()
         firstComputerMove()
     }
@@ -68,6 +79,15 @@ class TicTacToeActivity : AppCompatActivity(),
         super.onPause()
         xSound.release()
         oSound.release()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        val ed: SharedPreferences.Editor = prefs.edit()
+        ed.putInt("playerWins", scoreBoard[0])
+        ed.putInt("ties", scoreBoard[1])
+        ed.putInt("computerWins", scoreBoard[2])
+        ed.apply()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -104,9 +124,9 @@ class TicTacToeActivity : AppCompatActivity(),
                 difficultyDialog.show(supportFragmentManager,"difficulty")
                 return true
             }
-            R.id.quit -> {
-                val quitDialog = QuitDialog()
-                quitDialog.show(supportFragmentManager, "quit")
+            R.id.reset -> {
+                val resetDialog = ResetDialog()
+                resetDialog.show(supportFragmentManager, "quit")
                 return true
             }
             R.id.about -> {
@@ -129,7 +149,15 @@ class TicTacToeActivity : AppCompatActivity(),
     }
 
     override fun onDialogPositiveClick(dialog: DialogFragment) {
-        this.finish()
+        val ed: SharedPreferences.Editor = prefs.edit()
+        ed.putInt("playerWins", 0)
+        ed.putInt("ties", 0)
+        ed.putInt("computerWins", 0)
+        ed.apply()
+        scoreBoard = arrayOf(0,0,0)
+        ticTacToe.newGame()
+        setInitialText()
+        gridView.invalidate()
     }
 
     private fun touchGridEvent(event: MotionEvent?): Boolean {
@@ -167,7 +195,6 @@ class TicTacToeActivity : AppCompatActivity(),
     private fun setInitialText(){
         loadTurnText()
         loadScoreBoardText()
-        isGameFinished()
     }
 
     private fun isGameFinished(): Boolean{
@@ -234,12 +261,14 @@ class TicTacToeActivity : AppCompatActivity(),
             oSound.start()
             ticTacToe.setComputerMove()
             isGameFinished()
-            gridView.isEnabled = true }, 1000)
+            gridView.isEnabled = true}, 1000)
         gridView.invalidate()
     }
 
     private fun firstComputerMove(){
-        if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
+        if(isSingleMode &&
+            ticTacToe.getTurn()==ticTacToe.getComputerSymbol() &&
+            ticTacToe.checkForWinner()==" "){
             setComputerMove()
         }
     }
