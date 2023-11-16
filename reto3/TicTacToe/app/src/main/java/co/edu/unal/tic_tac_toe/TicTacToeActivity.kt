@@ -1,10 +1,12 @@
 package co.edu.unal.tic_tac_toe
 
+import android.content.Intent
 import android.content.SharedPreferences
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -14,6 +16,10 @@ import androidx.fragment.app.DialogFragment
 import co.edu.unal.tic_tac_toe.dialogs.AboutDialog
 import co.edu.unal.tic_tac_toe.dialogs.DifficultyDialog
 import co.edu.unal.tic_tac_toe.dialogs.ResetDialog
+import com.google.firebase.firestore.DocumentReference
+import com.google.firebase.firestore.ListenerRegistration
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 
 
 class TicTacToeActivity : AppCompatActivity(),
@@ -32,7 +38,13 @@ class TicTacToeActivity : AppCompatActivity(),
     private lateinit var xSound: MediaPlayer
     private lateinit var oSound: MediaPlayer
     private lateinit var prefs: SharedPreferences
+    private lateinit var gameId: String
+    private lateinit var docRef: DocumentReference
+    private lateinit var registration: ListenerRegistration
     private var isSingleMode = true
+    private var isHost = false
+    private val db = Firebase.firestore
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,12 +54,16 @@ class TicTacToeActivity : AppCompatActivity(),
         prefs = getSharedPreferences("ttt_prefs", MODE_PRIVATE);
         bundle = intent.extras!!
         isSingleMode = bundle.getBoolean("isSingleMode")
-
+        isHost = bundle.getBoolean("isHost")
+        gameId = bundle.getString("gameId").toString()
+        docRef = db.collection("current_games").document(gameId)
         ticTacToe = TicTacToe()
+        ticTacToe.setDocRef(docRef)
         if (savedInstanceState != null)
             ticTacToe.setValuesOnRestart(
                 savedInstanceState.getStringArray("board"),
-                savedInstanceState.getString("turn")
+                savedInstanceState.getString("turn"),
+                savedInstanceState.getBoolean("isSingleMode")
             )
         gridView = findViewById(R.id.grid)
         turnText = findViewById(R.id.turn)
@@ -62,15 +78,56 @@ class TicTacToeActivity : AppCompatActivity(),
         )
         symbols = arrayOf(ticTacToe.getPersonSymbol(),ticTacToe.getComputerSymbol())
         gridView.setTicTacToe(ticTacToe)
-        gridView.setOnTouchListener { _ , motionEvent -> touchGridEvent(motionEvent)
+        gridView.setOnTouchListener { _ , motionEvent ->
+            touchGridEvent(motionEvent)
         }
-
-        setInitialText()
-        firstComputerMove()
+        docRef.get()
+            .addOnSuccessListener { result ->
+                if(isHost)
+                    ticTacToe.setThisSymbol(result.data?.get("hostPlayerSymbol").toString())
+                else
+                    ticTacToe.setThisSymbol(result.data?.get("guestPlayerSymbol").toString())
+                Log.d("*******updateSymbolFromDB","nice")
+                if(ticTacToe.getTurn() == ticTacToe.getThisSymbol())
+                    ticTacToe.setIsListening(false)
+                else
+                    ticTacToe.setIsListening(true)
+                registration = docRef.addSnapshotListener { value, error ->
+                    if(error != null) {
+                        Log.d("***","HABEMUS PROBLEMAS")
+                    }
+                    if(value != null && value.exists() && ticTacToe.getIsListening()){
+                        if(value.data?.get("0") == "-" &&
+                            value.data?.get("1") == "-" &&
+                            value.data?.get("2") == "-" &&
+                            value.data?.get("3") == "-" &&
+                            value.data?.get("4") == "-" &&
+                            value.data?.get("5") == "-" &&
+                            value.data?.get("6") == "-" &&
+                            value.data?.get("7") == "-" &&
+                            value.data?.get("8") == "-"
+                            ){
+                            ticTacToe.setTurn(TicTacToe.xSymbol)
+                            if(ticTacToe.getTurn() == ticTacToe.getThisSymbol())
+                                ticTacToe.setIsListening(false)
+                            gridView.isEnabled = true
+                        }
+                        else{
+                            ticTacToe.changeTurn()
+                        }
+                        ticTacToe.updateBoardFromDB(gridView,::isGameFinished)
+                    }
+                }
+                firstComputerMove()
+                setInitialText()
+                gridView.invalidate()
+            }
+            .addOnFailureListener { e -> Log.w("***Error updateSymbolFromDB", "e") }
     }
 
     override fun onResume() {
         super.onResume()
+        Log.d("***Resume","Holi")
         xSound = MediaPlayer.create(applicationContext,R.raw.x_touch)
         oSound = MediaPlayer.create(applicationContext,R.raw.o_touch)
     }
@@ -83,17 +140,30 @@ class TicTacToeActivity : AppCompatActivity(),
 
     override fun onStop() {
         super.onStop()
-        val ed: SharedPreferences.Editor = prefs.edit()
-        ed.putInt("playerWins", scoreBoard[0])
-        ed.putInt("ties", scoreBoard[1])
-        ed.putInt("computerWins", scoreBoard[2])
-        ed.apply()
+        if(isSingleMode) {
+            val ed: SharedPreferences.Editor = prefs.edit()
+            ed.putInt("playerWins", scoreBoard[0])
+            ed.putInt("ties", scoreBoard[1])
+            ed.putInt("computerWins", scoreBoard[2])
+            ed.apply()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        registration.remove()
+        docRef.delete()
+    }
+
+    override fun onRestart() {
+        super.onRestart()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putStringArray("board", ticTacToe.getBoard())
         outState.putString("turn", ticTacToe.getTurn())
+        outState.putBoolean("isSingleMode", isSingleMode)
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -108,13 +178,22 @@ class TicTacToeActivity : AppCompatActivity(),
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.new_game -> {
-                ticTacToe.newGame()
-                loadTurnText()
-                gridView.invalidate()
-                gameStateText.text = " "
-                gridView.isEnabled = true
-                if(isSingleMode && ticTacToe.getTurn()==ticTacToe.getComputerSymbol()){
-                    setComputerMove()
+                if(isSingleMode) {
+                    ticTacToe.newGame(true)
+                    loadTurnText()
+                    gridView.invalidate()
+                    gameStateText.text = " "
+                    gridView.isEnabled = true
+                    if (ticTacToe.getTurn() == ticTacToe.getComputerSymbol()) {
+                        setComputerMove()
+                    }
+                }else{
+                    ticTacToe.newGame(false)
+                    ticTacToe.updateDBBoard(true)
+                    loadTurnText()
+                    gameStateText.text = " "
+                    gridView.isEnabled = true
+                    gridView.invalidate()
                 }
                 return true
             }
@@ -155,7 +234,7 @@ class TicTacToeActivity : AppCompatActivity(),
         ed.putInt("computerWins", 0)
         ed.apply()
         scoreBoard = arrayOf(0,0,0)
-        ticTacToe.newGame()
+        ticTacToe.newGame(isSingleMode)
         setInitialText()
         gridView.invalidate()
     }
@@ -183,10 +262,15 @@ class TicTacToeActivity : AppCompatActivity(),
                         setComputerMove()
                     }
                 } else {
-                    val tileWasChanged = setPlayerMove(tilePosition)
-                    if (tileWasChanged) {
-                        isGameFinished()
+                    if(ticTacToe.getTurn() == ticTacToe.getThisSymbol()) {
+                        val tileWasChanged = setPlayerMove(tilePosition)
+                        if (tileWasChanged) {
+                            isGameFinished()
+                            ticTacToe.updateDBBoard(false)
+                            gridView.invalidate()
+                        }
                     }
+                    loadTurnText()
                 }
             }
         }
@@ -198,23 +282,32 @@ class TicTacToeActivity : AppCompatActivity(),
     }
 
     private fun isGameFinished(): Boolean{
+        if(ticTacToe.getCurrentState() != "GAME_CONTINUES") {
+            return true
+        }
         val result = ticTacToe.checkForWinner()
-        when(result){
+        when (result) {
             "X" -> {
                 gameStateText.text = getString(R.string.x_wins)
-                scoreBoard[0] = scoreBoard[0]+1
+                scoreBoard[0] = scoreBoard[0] + 1
                 gridView.isEnabled = false
+                ticTacToe.setIsListening(true)
             }
+
             "TIE" -> {
                 gameStateText.text = getString(R.string.tie)
-                scoreBoard[1] = scoreBoard[1]+1
+                scoreBoard[1] = scoreBoard[1] + 1
                 gridView.isEnabled = false
+                ticTacToe.setIsListening(true)
             }
+
             "O" -> {
                 gameStateText.text = getString(R.string.o_wins)
-                scoreBoard[2] = scoreBoard[2]+1
+                scoreBoard[2] = scoreBoard[2] + 1
                 gridView.isEnabled = false
+                ticTacToe.setIsListening(true)
             }
+
             else -> {
                 gameStateText.text = " "
             }
@@ -226,7 +319,14 @@ class TicTacToeActivity : AppCompatActivity(),
 
     private fun loadTurnText(){
         val turn = ticTacToe.getTurn()
-        turnText.text = "Actual turn: $turn"
+        if(isSingleMode) {
+            turnText.text = "Actual turn: $turn"
+        }else {
+            if(ticTacToe.getThisSymbol() == turn)
+                turnText.text = "It's your turn ($turn)"
+            else
+                turnText.text = "Opponent's turn ($turn)"
+        }
     }
 
     private fun loadScoreBoardText(){
@@ -238,10 +338,15 @@ class TicTacToeActivity : AppCompatActivity(),
             xWinsText.text = "Player wins: $xWins"
             oWinsText.text = "Computer wins: $oWins"
         }else{
-            xWinsText.text = "X wins: $xWins"
-            oWinsText.text = "O wins: $oWins"
+            if(ticTacToe.getThisSymbol() == TicTacToe.xSymbol){
+                xWinsText.text = "Your wins: $xWins"
+                oWinsText.text = "Opponent wins: $oWins"
+            }else{
+                xWinsText.text = "Your wins: $oWins"
+                oWinsText.text = "Opponent wins: $xWins"
+            }
         }
-
+        gridView.invalidate()
     }
 
     private fun setPlayerMove(field: Int): Boolean{

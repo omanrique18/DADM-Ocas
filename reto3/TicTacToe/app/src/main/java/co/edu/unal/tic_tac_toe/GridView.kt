@@ -15,8 +15,7 @@ class GridView(context: Context, attrs: AttributeSet): View(context,attrs) {
     private var oBitmap: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.o_symbol)
     private var gridBitmap: Bitmap? = BitmapFactory.decodeResource(resources, R.drawable.grid)
 
-
-    override fun onDraw(canvas: Canvas?) {
+    override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
         val gridWidth = width
         val gridHeight = height
@@ -35,9 +34,9 @@ class GridView(context: Context, attrs: AttributeSet): View(context,attrs) {
             val bottom = (row + 1) * tileHeight - 70
             val tileArea = Rect(left,top,right,bottom)
 
-            if (board[i] == ticTacToe.xSymbol)
+            if (board[i] == TicTacToe.xSymbol)
                 canvas.drawBitmap(xBitmap!!, null, tileArea, null)
-            if (board[i] == ticTacToe.oSymbol)
+            if (board[i] == TicTacToe.oSymbol)
                 canvas.drawBitmap(oBitmap!!, null, tileArea, null)
         }
     }
