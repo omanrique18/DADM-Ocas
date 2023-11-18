@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Reto8</string>
+    <string name="ic_delete_forever">ic_delete_forever</string>
+    <string name="description_add_button">description_add_button</string>
+</resources>

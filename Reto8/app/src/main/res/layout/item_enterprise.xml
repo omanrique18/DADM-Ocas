@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/common_padding_default">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/enterpriseName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="@dimen/common_padding_min"
+                android:text="Name"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                app:layout_constraintEnd_toStartOf="@+id/button"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_delete_forever"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/enterpriseName"
+                app:layout_constraintTop_toTopOf="@+id/enterpriseName"
+                android:contentDescription="@string/ic_delete_forever" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/enterpriseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="url"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:padding="@dimen/common_padding_min"/>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/enterprisePhone"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="@dimen/common_padding_min"
+                android:text="phone"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toStartOf="@+id/enterpriseEmail"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/enterpriseEmail"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:padding="@dimen/common_padding_min"
+                android:text="email"
+                android:textAppearance="?attr/textAppearanceBody1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/enterprisePhone"
+                app:layout_constraintTop_toTopOf="@+id/enterprisePhone" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/enterpriseProductsServices"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Products and services"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:padding="@dimen/common_padding_min"/>
+
+        <TextView
+            android:id="@+id/enterpriseClassification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="classification"
+            android:textAppearance="?attr/textAppearanceBody1"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:padding="@dimen/common_padding_min"/>
+
+    </LinearLayout>
+
+</androidx.cardview.widget.CardView>
