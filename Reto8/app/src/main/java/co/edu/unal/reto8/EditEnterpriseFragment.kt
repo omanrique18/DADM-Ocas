@@ -14,7 +14,6 @@ import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import co.edu.unal.reto8.databinding.FragmentEditEnterpriseBinding
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputLayout
 import java.util.concurrent.LinkedBlockingQueue
 
@@ -79,7 +78,7 @@ class EditEnterpriseFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         mBinding = FragmentEditEnterpriseBinding.inflate(inflater,container,false)
         return mBinding.root
     }
@@ -104,6 +103,7 @@ class EditEnterpriseFragment : Fragment() {
         setupActionBar()
         setHasOptionsMenu(true)
         setupTextFields()
+        setupDropdownMenu()
     }
 
     private fun setupActionBar(){
@@ -112,6 +112,19 @@ class EditEnterpriseFragment : Fragment() {
         mActivity?.supportActionBar?.title =
             if(mIsEditMode) getString(R.string.edit_enterprise_title_edit)
             else getString(R.string.edit_enterprise_title_add)
+    }
+
+    private fun setupDropdownMenu(){
+        if(mEnterpriseEntity!!.classification.isNotEmpty()){
+            mBinding.dropdownEnterpriseClassification
+                .setText(mEnterpriseEntity!!.classification,false)
+        }else {
+            mBinding.dropdownEnterpriseClassification
+                .setText(
+                    resources.getStringArray(R.array.dropdown_enterprise_classification_options)[0],
+                    false
+                )
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -136,7 +149,7 @@ class EditEnterpriseFragment : Fragment() {
                         email = mBinding.eTextEnterpriseEmail.text.toString().trim()
                         productsAndServices =
                             mBinding.eTextEnterpriseProdServ.text.toString().trim()
-                        classification = "TODO()"
+                        classification = mBinding.dropdownEnterpriseClassification.text.toString().trim()
                     }
 
                     val queue = LinkedBlockingQueue<EnterpriseEntity>()

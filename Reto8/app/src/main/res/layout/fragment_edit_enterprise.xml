@@ -88,6 +88,24 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseClassification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_classification"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:startIconDrawable="@drawable/ic_class"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.ExposedDropdownMenu">
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/dropdownEnterpriseClassification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="none"
+                app:simpleItems="@array/dropdown_enterprise_classification_options" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEnterpriseProdServ"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -108,6 +126,7 @@
                 android:maxLines="@integer/liner_max_prod_serv"
                 android:minLines="@integer/liner_max_prod_serv"/>
         </com.google.android.material.textfield.TextInputLayout>
+
         <!--
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilEnterpriseClassification"
