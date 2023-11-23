@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    tools:context=".EditEnterpriseFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/common_padding_default">
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_name"
+            app:helperText="@string/helper_required"
+            app:endIconMode="clear_text"
+            app:counterMaxLength="@integer/counter_max_name"
+            app:counterEnabled="true"
+            app:startIconDrawable="@drawable/ic_storefront"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterpriseName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="@integer/counter_max_name"
+                android:inputType="textCapSentences"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseUrl"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_url"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_link"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterpriseUrl"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Caption"
+                android:inputType="textMultiLine"
+                android:maxLines="@integer/liner_max_url"
+                android:minLines="@integer/liner_max_url"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterprisePhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_phone"
+            app:helperText="@string/helper_required"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_phone"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterprisePhone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="@integer/counter_max_phone"
+                android:inputType="phone"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseEmail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_email"
+            app:helperText="@string/helper_required"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/ic_mail_outline"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterpriseEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="@integer/counter_max_mail"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseProdServ"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_prod_serv"
+            app:endIconMode="clear_text"
+            app:counterMaxLength="@integer/counter_max_prod_serv"
+            app:counterEnabled="true"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterpriseProdServ"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+                android:maxLength="@integer/counter_max_prod_serv"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:maxLines="@integer/liner_max_prod_serv"
+                android:minLines="@integer/liner_max_prod_serv"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        <!--
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilEnterpriseClassification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_enterprise_classification"
+            app:helperText="@string/helper_required"
+            app:endIconMode="dropdown_menu"
+            app:startIconDrawable="@drawable/ic_class"
+            android:layout_marginTop="@dimen/common_padding_default"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/eTextEnterpriseClassification"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:maxLength="@integer/counter_max_mail"
+                android:inputType="textEmailAddress"/>
+        </com.google.android.material.textfield.TextInputLayout>
+        -->
+
+
+    </LinearLayout>
+
+
+</androidx.core.widget.NestedScrollView>
